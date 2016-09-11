@@ -2,11 +2,16 @@ package com.elsewhat.leselekse;
 
 import android.annotation.SuppressLint;
 import android.app.Instrumentation;
+import android.graphics.Color;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.method.KeyListener;
+import android.text.style.CharacterStyle;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -25,6 +30,7 @@ public class LeseLekseActivity extends AppCompatActivity {
     private LeseLekse leseLekse;
 
     TextView mTekstLese;
+    CharacterStyle markertOrdStil = new ForegroundColorSpan(Color.parseColor("#FFDA7A"));
 
     private static final String LOGTAG = "LeseLekseActivity";
 
@@ -134,7 +140,7 @@ public class LeseLekseActivity extends AppCompatActivity {
         leseLekse = new LeseLekse("Uke 3",3,leseLinjer);
 
         mTekstLese = (TextView) findViewById(R.id.fullscreen_content);
-        mTekstLese.setText(leseLekse.forsteLeseLinje().hentTekst());
+        mTekstLese.setText(leseLekse.forsteLeseLinje().hentTekst(markertOrdStil));
 
     }
 
@@ -154,31 +160,34 @@ public class LeseLekseActivity extends AppCompatActivity {
             return false;
         }
         boolean handled = false;
-        Log.d(LOGTAG,"Key onKey :" + String.valueOf(event.getKeyCode()));
-        LeseLinje lesLinje;
+        //Log.d(LOGTAG,"Key onKey :" + String.valueOf(event.getKeyCode()));
+
+        LeseLinje leseLinje=leseLekse.hentLeseLinje();
         switch (event.getKeyCode()){
             case KeyEvent.KEYCODE_DPAD_CENTER:
                 //FireTV center button
                 //only allow switch once pr half second
                 //TODO: Swap highlightning
+                leseLinje.markerNesteOrd();
+                mTekstLese.setText(leseLinje.hentTekst(markertOrdStil));
                 handled = true;
                 break;
             case KeyEvent.KEYCODE_DPAD_LEFT:
                 //FireTV left button
-                lesLinje = leseLekse.forrigeLeseLinje();
-                if (lesLinje == null) {
-                    lesLinje = leseLekse.forsteLeseLinje();
+                leseLinje = leseLekse.forrigeLeseLinje();
+                if (leseLinje == null) {
+                    leseLinje = leseLekse.forsteLeseLinje();
                 }
-                mTekstLese.setText(lesLinje.hentTekst());
+                mTekstLese.setText(leseLinje.hentTekst(markertOrdStil));
                 handled = true;
                 break;
             case KeyEvent.KEYCODE_DPAD_RIGHT:
                 //FireTV right button
-                lesLinje = leseLekse.nesteLeseLinje();
-                if (lesLinje == null) {
-                    lesLinje = leseLekse.forsteLeseLinje();
+                leseLinje = leseLekse.nesteLeseLinje();
+                if (leseLinje == null) {
+                    leseLinje = leseLekse.forsteLeseLinje();
                 }
-                mTekstLese.setText(lesLinje.hentTekst());
+                mTekstLese.setText(leseLinje.hentTekst(markertOrdStil));
                 handled = true;
                 break;
         }

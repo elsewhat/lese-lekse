@@ -8,14 +8,16 @@ public class LeseLekse {
     private int maalRepitisjoner;
     private int repitisjoner;
     private LeseLinje[] leseLinjer;
-    private int leseLinjeNaa;
+    private int leseLinjeNaaIndeks;
+    private LeseLinje leseLinjeNaa;
+
 
     public LeseLekse (String lekseTitle, int maalRepitisjoner, LeseLinje[] leseLinjer){
         this.lekseTitle=lekseTitle;
         this.maalRepitisjoner = maalRepitisjoner;
         this.leseLinjer = leseLinjer;
         repitisjoner =0;
-        leseLinjeNaa=0;
+        leseLinjeNaaIndeks=0;
 
     }
 
@@ -33,33 +35,46 @@ public class LeseLekse {
         }
     }
 
-    public LeseLinje nesteLeseLinje(){
-        leseLinjeNaa++;
-        if(leseLinjeNaa > leseLinjer.length-1){
-            return null;
+    public LeseLinje hentLeseLinje(){
+         return leseLinjeNaa;
+    }
+
+    public boolean erSisteLeseLinje(){
+        if(leseLinjeNaaIndeks >= leseLinjer.length-1){
+            return true;
         }else {
-            return leseLinjer[leseLinjeNaa];
+            return false;
         }
+    }
+
+    public LeseLinje nesteLeseLinje(){
+        leseLinjeNaaIndeks++;
+        if(leseLinjeNaaIndeks > leseLinjer.length-1){
+            leseLinjeNaaIndeks=leseLinjer.length-1;
+        }
+
+        leseLinjeNaa = leseLinjer[leseLinjeNaaIndeks];
+        leseLinjeNaa.nullstillMarkertOrd();
+        return leseLinjeNaa;
     }
 
     public LeseLinje forrigeLeseLinje(){
-        leseLinjeNaa--;
-        if(leseLinjeNaa<0){
-            leseLinjeNaa=0;
+        leseLinjeNaaIndeks--;
+        if(leseLinjeNaaIndeks<0){
+            leseLinjeNaaIndeks=0;
         }
-        if(leseLinjeNaa > leseLinjer.length-1){
-            return null;
-        }else {
-            return leseLinjer[leseLinjeNaa];
-        }
+
+        leseLinjeNaa = leseLinjer[leseLinjeNaaIndeks];
+        leseLinjeNaa.nullstillMarkertOrd();
+        return leseLinjeNaa;
     }
 
     public LeseLinje forsteLeseLinje(){
-        leseLinjeNaa=0;
-        if(leseLinjeNaa > leseLinjer.length-1){
-            return null;
-        }else {
-            return leseLinjer[leseLinjeNaa];
-        }
+        leseLinjeNaaIndeks=0;
+        leseLinjeNaa = leseLinjer[leseLinjeNaaIndeks];
+        leseLinjeNaa.nullstillMarkertOrd();
+        return leseLinjeNaa;
     }
+
+
 }
