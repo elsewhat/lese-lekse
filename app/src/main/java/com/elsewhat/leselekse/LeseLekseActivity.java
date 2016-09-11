@@ -1,18 +1,33 @@
 package com.elsewhat.leselekse;
 
 import android.annotation.SuppressLint;
+import android.app.Instrumentation;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.method.KeyListener;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.elsewhat.leselekse.model.LeseLekse;
+import com.elsewhat.leselekse.model.LeseLinje;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
 public class LeseLekseActivity extends AppCompatActivity {
+    private LeseLekse leseLekse;
+
+    TextView mTekstLese;
+
+    private static final String LOGTAG = "LeseLekseActivity";
+
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -49,7 +64,6 @@ public class LeseLekseActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
     };
-    private View mControlsView;
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
         public void run() {
@@ -58,7 +72,6 @@ public class LeseLekseActivity extends AppCompatActivity {
             if (actionBar != null) {
                 actionBar.show();
             }
-            mControlsView.setVisibility(View.VISIBLE);
         }
     };
     private boolean mVisible;
@@ -90,7 +103,6 @@ public class LeseLekseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lese_lekse);
 
         mVisible = true;
-        mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
 
@@ -102,10 +114,28 @@ public class LeseLekseActivity extends AppCompatActivity {
             }
         });
 
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+
+
+
+
+        LeseLinje[] leseLinjer = {
+                new LeseLinje("r, i, s, e, l, o, l, e, r, s, o, i"),
+                new LeseLinje("re, ro, ri, se, so, le, li, ro, ri"),
+                new LeseLinje("O-le ler."),
+                new LeseLinje("Si-ri rir."),
+                new LeseLinje("O-le ser ro-se."),
+                new LeseLinje("o r s o ø e"),
+                new LeseLinje("se"),
+                new LeseLinje("se os los ros"),
+                new LeseLinje("les"),
+                new LeseLinje("les os los ros"),
+                new LeseLinje("ros"),
+        };
+        leseLekse = new LeseLekse("Uke 3",3,leseLinjer);
+
+        mTekstLese = (TextView) findViewById(R.id.fullscreen_content);
+        mTekstLese.setText(leseLekse.forsteLeseLinje().hentTekst());
+
     }
 
     @Override
@@ -116,6 +146,43 @@ public class LeseLekseActivity extends AppCompatActivity {
         // created, to briefly hint to the user that UI controls
         // are available.
         delayedHide(100);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event){
+        if(event.getRepeatCount()>0 || event.getAction()!= KeyEvent.ACTION_DOWN) {
+            return false;
+        }
+        boolean handled = false;
+        Log.d(LOGTAG,"Key onKey :" + String.valueOf(event.getKeyCode()));
+        LeseLinje lesLinje;
+        switch (event.getKeyCode()){
+            case KeyEvent.KEYCODE_DPAD_CENTER:
+                //FireTV center button
+                //only allow switch once pr half second
+                //TODO: Swap highlightning
+                handled = true;
+                break;
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+                //FireTV left button
+                lesLinje = leseLekse.forrigeLeseLinje();
+                if (lesLinje == null) {
+                    lesLinje = leseLekse.forsteLeseLinje();
+                }
+                mTekstLese.setText(lesLinje.hentTekst());
+                handled = true;
+                break;
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                //FireTV right button
+                lesLinje = leseLekse.nesteLeseLinje();
+                if (lesLinje == null) {
+                    lesLinje = leseLekse.forsteLeseLinje();
+                }
+                mTekstLese.setText(lesLinje.hentTekst());
+                handled = true;
+                break;
+        }
+        return handled;
     }
 
     private void toggle() {
@@ -132,7 +199,6 @@ public class LeseLekseActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.hide();
         }
-        mControlsView.setVisibility(View.GONE);
         mVisible = false;
 
         // Schedule a runnable to remove the status and navigation bar after a delay

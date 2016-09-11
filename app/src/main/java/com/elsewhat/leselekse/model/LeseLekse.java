@@ -8,12 +8,15 @@ public class LeseLekse {
     private int maalRepitisjoner;
     private int repitisjoner;
     private LeseLinje[] leseLinjer;
+    private int leseLinjeNaa;
 
     public LeseLekse (String lekseTitle, int maalRepitisjoner, LeseLinje[] leseLinjer){
         this.lekseTitle=lekseTitle;
         this.maalRepitisjoner = maalRepitisjoner;
         this.leseLinjer = leseLinjer;
         repitisjoner =0;
+        leseLinjeNaa=0;
+
     }
 
     /**
@@ -25,19 +28,38 @@ public class LeseLekse {
 
         if(repitisjoner>= maalRepitisjoner){
             return true;
+        }else {
+            return false;
         }
     }
 
-
-}
-
-class LeseLinje {
-    private String tekst;
-    private int fokusPaaStavelseNr;
-
-    public LeseLinje(String tekst){
-        this.tekst=tekst;
-        fokusPaaStavelseNr=-1;
+    public LeseLinje nesteLeseLinje(){
+        leseLinjeNaa++;
+        if(leseLinjeNaa > leseLinjer.length-1){
+            return null;
+        }else {
+            return leseLinjer[leseLinjeNaa];
+        }
     }
 
+    public LeseLinje forrigeLeseLinje(){
+        leseLinjeNaa--;
+        if(leseLinjeNaa<0){
+            leseLinjeNaa=0;
+        }
+        if(leseLinjeNaa > leseLinjer.length-1){
+            return null;
+        }else {
+            return leseLinjer[leseLinjeNaa];
+        }
+    }
+
+    public LeseLinje forsteLeseLinje(){
+        leseLinjeNaa=0;
+        if(leseLinjeNaa > leseLinjer.length-1){
+            return null;
+        }else {
+            return leseLinjer[leseLinjeNaa];
+        }
+    }
 }
