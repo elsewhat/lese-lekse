@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Instrumentation;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +27,8 @@ import android.widget.Toast;
 import com.elsewhat.leselekse.model.LeseLekse;
 import com.elsewhat.leselekse.model.LeseLinje;
 
+import java.util.Locale;
+
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
@@ -35,6 +39,11 @@ public class LeseLekseActivity extends AppCompatActivity {
     TextView mTekstLese;
     RatingBar mStjerner;
     CharacterStyle markertOrdStil = new ForegroundColorSpan(Color.parseColor("#FFDA7A"));
+
+    MediaPlayer mediaBelonning;
+    MediaPlayer mediaOppstart;
+    MediaPlayer mediaNavigasjon;
+    TextToSpeech tekstTilTale;
 
     private static final String LOGTAG = "LeseLekseActivity";
 
@@ -148,6 +157,48 @@ public class LeseLekseActivity extends AppCompatActivity {
         mStjerner =(RatingBar) findViewById(R.id.stjerner);
         Drawable mStjernerDrawable = mStjerner.getProgressDrawable();
         DrawableCompat.setTint(mStjernerDrawable, Color.YELLOW);
+
+        mediaOppstart = MediaPlayer.create(this, R.raw.start);
+        mediaOppstart.start();
+
+        mediaBelonning = MediaPlayer.create(this, R.raw.jippi);
+        mediaNavigasjon= MediaPlayer.create(this, R.raw.tick);
+        mediaNavigasjon.setVolume(0.2f,0.2f);
+
+        /*mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.release();
+            }
+        });*/
+
+        /*FireTV støtter ikke noen tts språk
+        tekstTilTale=new TextToSpeech(LeseLekseActivity.this, new TextToSpeech.OnInitListener() {
+
+            @Override
+            public void onInit(int status) {
+                // TODO Auto-generated method stub
+                if(status == TextToSpeech.SUCCESS){
+                    Locale[] locales = Locale.getAvailableLocales();
+                    for (Locale locale: locales) {
+                        Log.d(LOGTAG, "Local " + locale.toString() + " " + tekstTilTale.isLanguageAvailable(locale));
+                    }
+
+                    int result=tekstTilTale.setLanguage(Locale.US);
+
+                    if(result==TextToSpeech.LANG_MISSING_DATA ||
+                            result==TextToSpeech.LANG_NOT_SUPPORTED){
+                        Log.e("error", "This Language is not supported");
+                    }
+                    else{
+                        tekstTilTale.speak(leseLekse.hentLeseLinje().hentTekst(markertOrdStil).toString(), TextToSpeech.QUEUE_FLUSH, null,System.currentTimeMillis()+"");
+                    }
+                }
+                else
+                    Log.e("error", "Initilization Failed!");
+            }
+        });*/
+
     }
 
     @Override
@@ -175,6 +226,7 @@ public class LeseLekseActivity extends AppCompatActivity {
                 //only allow switch once pr half second
                 //TODO: Swap highlightning
                 leseLinje.markerNesteOrd();
+                mediaNavigasjon.start();
                 mTekstLese.setText(leseLinje.hentTekst(markertOrdStil));
                 handled = true;
                 break;
@@ -184,6 +236,7 @@ public class LeseLekseActivity extends AppCompatActivity {
                 if (leseLinje == null) {
                     leseLinje = leseLekse.forsteLeseLinje();
                 }
+                mediaNavigasjon.start();
                 mTekstLese.setText(leseLinje.hentTekst(markertOrdStil));
                 handled = true;
                 break;
@@ -194,7 +247,9 @@ public class LeseLekseActivity extends AppCompatActivity {
                     leseLekse.utfortRepitisjon();
                     mStjerner.setRating(leseLekse.hentRepitisjoner());
                     leseLinje = leseLekse.forsteLeseLinje();
+                    mediaBelonning.start();
                 }
+                mediaNavigasjon.start();
                 mTekstLese.setText(leseLinje.hentTekst(markertOrdStil));
                 handled = true;
                 break;

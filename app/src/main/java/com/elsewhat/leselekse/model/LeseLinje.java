@@ -27,7 +27,7 @@ public class LeseLinje {
         fokusPaaStavelseNr=-1;
         markerOrdIndeks=0;
         antallOrd= antallOrd();
-        Log.d(LOGTAG, "Antall ord"+antallOrd);
+        //Log.d(LOGTAG, "Antall ord"+antallOrd);
     }
 
     public Spannable hentTekst(CharacterStyle stilForMarkertOrd){
