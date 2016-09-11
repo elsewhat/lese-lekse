@@ -35,6 +35,10 @@ public class LeseLekse {
         }
     }
 
+    public int hentRepitisjoner(){
+        return repitisjoner;
+    }
+
     public LeseLinje hentLeseLinje(){
          return leseLinjeNaa;
     }
@@ -50,7 +54,7 @@ public class LeseLekse {
     public LeseLinje nesteLeseLinje(){
         leseLinjeNaaIndeks++;
         if(leseLinjeNaaIndeks > leseLinjer.length-1){
-            leseLinjeNaaIndeks=leseLinjer.length-1;
+            return null;
         }
 
         leseLinjeNaa = leseLinjer[leseLinjeNaaIndeks];

@@ -42,7 +42,7 @@ public class LeseLinje {
                     if(ordIndeks==markerOrdIndeks) {
                         markertOrdStart = tekst.indexOf(token, startIndeks);
                         markertOrdSlutt = markertOrdStart + token.length();
-                        System.out.println("Ord:" + markerOrdIndeks +  " token:" + token + " start:" + markertOrdStart + " slutt:" + markertOrdSlutt);
+                        //System.out.println("Ord:" + markerOrdIndeks +  " token:" + token + " start:" + markertOrdStart + " slutt:" + markertOrdSlutt);
                         break;
                     }else{
                         startIndeks = tekst.indexOf(token, startIndeks);

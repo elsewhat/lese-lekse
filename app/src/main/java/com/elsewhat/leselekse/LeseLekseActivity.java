@@ -3,6 +3,8 @@ package com.elsewhat.leselekse;
 import android.annotation.SuppressLint;
 import android.app.Instrumentation;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +33,7 @@ public class LeseLekseActivity extends AppCompatActivity {
     private LeseLekse leseLekse;
 
     TextView mTekstLese;
+    RatingBar mStjerner;
     CharacterStyle markertOrdStil = new ForegroundColorSpan(Color.parseColor("#FFDA7A"));
 
     private static final String LOGTAG = "LeseLekseActivity";
@@ -109,7 +113,7 @@ public class LeseLekseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lese_lekse);
 
         mVisible = true;
-        mContentView = findViewById(R.id.fullscreen_content);
+        mContentView = findViewById(R.id.lese_tekst);
 
 
         // Set up the user interaction to manually show or hide the system UI.
@@ -139,9 +143,11 @@ public class LeseLekseActivity extends AppCompatActivity {
         };
         leseLekse = new LeseLekse("Uke 3",3,leseLinjer);
 
-        mTekstLese = (TextView) findViewById(R.id.fullscreen_content);
+        mTekstLese = (TextView) findViewById(R.id.lese_tekst);
         mTekstLese.setText(leseLekse.forsteLeseLinje().hentTekst(markertOrdStil));
-
+        mStjerner =(RatingBar) findViewById(R.id.stjerner);
+        Drawable mStjernerDrawable = mStjerner.getProgressDrawable();
+        DrawableCompat.setTint(mStjernerDrawable, Color.YELLOW);
     }
 
     @Override
@@ -185,6 +191,8 @@ public class LeseLekseActivity extends AppCompatActivity {
                 //FireTV right button
                 leseLinje = leseLekse.nesteLeseLinje();
                 if (leseLinje == null) {
+                    leseLekse.utfortRepitisjon();
+                    mStjerner.setRating(leseLekse.hentRepitisjoner());
                     leseLinje = leseLekse.forsteLeseLinje();
                 }
                 mTekstLese.setText(leseLinje.hentTekst(markertOrdStil));
